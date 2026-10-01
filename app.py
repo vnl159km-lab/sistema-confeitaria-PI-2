@@ -21,6 +21,7 @@ LOGO_PATH = BASE_DIR / "static" / "img" / "logo.jpg"
 FORMAS_PAGAMENTO = ["Dinheiro", "Pix", "Cartão de Débito", "Cartão de Crédito"]
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 RESET_PASSWORD = os.environ.get("RESET_PASSWORD", "chefinha")
+APP_VERSION = "1.0.0"
 
 BRAND_PRIMARY = colors.HexColor("#cf2f92")
 BRAND_SECONDARY = colors.HexColor("#fbe7f4")
@@ -32,6 +33,7 @@ PDF_FONTS_READY = False
 
 app = Flask(__name__, template_folder=str(BASE_DIR / "templates"), static_folder=str(BASE_DIR / "static"))
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "confeitaria-flask-secret-key")
+app.jinja_env.globals["APP_VERSION"] = APP_VERSION
 
 
 def get_db():

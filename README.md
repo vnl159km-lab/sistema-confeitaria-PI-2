@@ -2,6 +2,10 @@
 
 Aplicação web local para cadastro de produtos, PDV, fluxo de caixa, relatórios em PDF e controle de estoque.
 
+**Versão atual:** `1.0.0`
+
+Cada melhoria receberá um novo número de versão e será registrada em `CHANGELOG.md` antes de ser enviada ao GitHub.
+
 ## Tecnologias
 
 - Python
