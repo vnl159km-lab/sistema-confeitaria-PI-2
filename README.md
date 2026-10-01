@@ -2,7 +2,7 @@
 
 Aplicação web local para cadastro de produtos, PDV, fluxo de caixa, relatórios em PDF e controle de estoque.
 
-**Versão atual:** `1.1.0`
+**Versão atual:** `1.2.0`
 
 Cada melhoria receberá um novo número de versão e será registrada em `CHANGELOG.md` antes de ser enviada ao GitHub.
 
@@ -30,7 +30,8 @@ O projeto está em evolução contínua e utiliza o GitHub como controle de vers
 | Versão | Data | Atualização |
 | --- | --- | --- |
 | `1.0.0` | 30/09/2026 | Lançamento inicial com produtos, PDV, estoque, fluxo de caixa e relatórios. |
-| `1.1.0` | 30/09/2026 | Inclusão de acessibilidade, alto contraste, adaptação ao zoom e venda por voz. |
+| `1.1.0` | 30/09/2026 | Inclusão de acessibilidade, alto contraste e adaptação ao zoom. |
+| `1.2.0` | 30/09/2026 | Leitura em voz alta dos itens, forma de pagamento e valor no fechamento da venda. |
 
 As novas versões serão adicionadas ao final desta tabela, mantendo a evolução cronológica do sistema.
 
@@ -38,7 +39,7 @@ As novas versões serão adicionadas ao final desta tabela, mantendo a evoluçã
 
 - Botão ♿ com opção de alto contraste, salva para os próximos acessos.
 - Layout responsivo para uso com zoom do navegador.
-- PDV com reconhecimento de venda por voz em navegadores compatíveis, como o Google Chrome.
+- PDV com leitura em voz alta do resumo da venda em navegadores compatíveis.
 
 ## Tecnologias
 

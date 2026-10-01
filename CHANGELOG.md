@@ -12,4 +12,7 @@ Esta página é a linha do tempo das atualizações do sistema. As versões apar
 
 - Adicionado botão de acessibilidade com alto contraste e navegação por teclado aprimorada.
 - Ajustado o layout responsivo para uso com zoom do navegador.
-- Adicionado reconhecimento de voz no PDV para incluir produtos pela fala.
+
+## 1.2.0 — 30/09/2026
+
+- Adicionada leitura em voz alta dos itens, forma de pagamento e valor total antes de finalizar a venda.

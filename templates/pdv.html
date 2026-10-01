@@ -40,12 +40,12 @@
                     </div>
 
                     <div class="mt-3 border-top pt-3">
-                        <h3 class="h6">Venda por voz</h3>
-                        <p class="form-text mb-2">Diga, por exemplo: “2 brigadeiros” ou “dois brigadeiros”. O nome precisa estar cadastrado no sistema.</p>
-                        <button type="button" id="iniciar-voz" class="btn btn-outline-primary w-100">
-                            🎙️ Falar produto e quantidade
+                        <h3 class="h6">Leitura da venda</h3>
+                        <p class="form-text mb-2">Antes de concluir a venda, o sistema lê os itens, a forma de pagamento e o valor total.</p>
+                        <button type="button" id="ouvir-resumo" class="btn btn-outline-primary w-100">
+                            🔊 Ouvir resumo da venda
                         </button>
-                        <p id="status-voz" class="small mt-2 mb-0" role="status" aria-live="polite"></p>
+                        <p id="status-leitura" class="small mt-2 mb-0" role="status" aria-live="polite"></p>
                     </div>
                 {% else %}
                     <div class="alert alert-warning mb-0">
@@ -101,7 +101,7 @@
                                 Total: <span id="total-geral">R$ 0,00</span>
                             </div>
                             <button type="submit" class="btn btn-success px-4">
-                                Finalizar venda
+                                Finalizar e ler venda
                             </button>
                         </div>
                     </div>
@@ -122,8 +122,8 @@
     const itensJsonInput = document.getElementById("itens_json");
     const formVenda = document.getElementById("form-venda");
     const botaoAdicionar = document.getElementById("adicionar-item");
-    const botaoVoz = document.getElementById("iniciar-voz");
-    const statusVoz = document.getElementById("status-voz");
+    const botaoOuvirResumo = document.getElementById("ouvir-resumo");
+    const statusLeitura = document.getElementById("status-leitura");
 
     function formatarMoeda(valor) {
         return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -223,82 +223,44 @@
         });
     }
 
-    function normalizarTexto(texto) {
-        return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    function criarResumoDaVenda() {
+        const itens = carrinho.map((item) => `${item.quantidade} ${item.quantidade === 1 ? "unidade" : "unidades"} de ${item.nome}`).join(", ");
+        const total = carrinho.reduce((soma, item) => soma + item.quantidade * item.preco_unitario, 0);
+        const pagamento = document.getElementById("forma_pagamento").value;
+        return `Resumo da venda. Itens: ${itens}. Forma de pagamento: ${pagamento || "não informada"}. Total a pagar: ${formatarMoeda(total)}.`;
     }
 
-    function encontrarProdutoPorVoz(texto) {
-        const textoNormalizado = normalizarTexto(texto);
-        return Array.from(produtoSelect.options).find((option) => {
-            const nome = normalizarTexto(option.dataset.nome || "");
-            return option.value && !option.disabled && (textoNormalizado.includes(nome) || nome.includes(textoNormalizado));
-        });
-    }
+    function lerResumoDaVenda(aoTerminar) {
+        if (!("speechSynthesis" in window)) {
+            statusLeitura.textContent = "A leitura em voz alta não é compatível com este navegador.";
+            if (aoTerminar) aoTerminar();
+            return;
+        }
 
-    function obterQuantidadeDaVoz(transcricao) {
-        const numerosPorExtenso = {
-            um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5,
-            seis: 6, sete: 7, oito: 8, nove: 9, dez: 10
+        window.speechSynthesis.cancel();
+        const fala = new SpeechSynthesisUtterance(criarResumoDaVenda());
+        fala.lang = "pt-BR";
+        fala.rate = 0.9;
+        statusLeitura.textContent = "Lendo o resumo da venda...";
+        fala.onend = () => {
+            statusLeitura.textContent = "Leitura concluída.";
+            if (aoTerminar) aoTerminar();
         };
-        const textoNormalizado = normalizarTexto(transcricao);
-        const numeroEmDigitos = textoNormalizado.match(/\d+/);
-        if (numeroEmDigitos) {
-            return parseInt(numeroEmDigitos[0], 10);
-        }
-
-        const numeroPorExtenso = Object.keys(numerosPorExtenso).find((numero) =>
-            new RegExp(`\\b${numero}\\b`).test(textoNormalizado)
-        );
-        return numeroPorExtenso ? numerosPorExtenso[numeroPorExtenso] : 1;
+        fala.onerror = () => {
+            statusLeitura.textContent = "Não foi possível concluir a leitura em voz alta.";
+            if (aoTerminar) aoTerminar();
+        };
+        window.speechSynthesis.speak(fala);
     }
 
-    function removerQuantidadeDaFala(transcricao) {
-        return transcricao
-            .replace(/\d+/g, "")
-            .replace(/\b(um|uma|dois|duas|três|tres|quatro|cinco|seis|sete|oito|nove|dez)\b/gi, "")
-            .replace(/\b(unidade|unidades|item|itens)\b/gi, "")
-            .trim();
-    }
-
-    if (botaoVoz) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        if (!SpeechRecognition) {
-            botaoVoz.disabled = true;
-            statusVoz.textContent = "O reconhecimento de voz não é compatível com este navegador. Use o Google Chrome atualizado.";
-        } else {
-            const reconhecimento = new SpeechRecognition();
-            reconhecimento.lang = "pt-BR";
-            reconhecimento.interimResults = false;
-            reconhecimento.maxAlternatives = 1;
-
-            botaoVoz.addEventListener("click", () => {
-                statusVoz.textContent = "Ouvindo... fale a quantidade e o nome do produto.";
-                reconhecimento.start();
-            });
-
-            reconhecimento.addEventListener("result", (event) => {
-                const transcricao = event.results[0][0].transcript;
-                const quantidade = obterQuantidadeDaVoz(transcricao);
-                const textoProduto = removerQuantidadeDaFala(transcricao);
-                const option = encontrarProdutoPorVoz(textoProduto);
-
-                if (!option) {
-                    statusVoz.textContent = `Não encontrei “${transcricao}”. Tente falar o nome cadastrado do produto.`;
-                    return;
-                }
-
-                const erro = adicionarProduto(option, quantidade);
-                statusVoz.textContent = erro || `${quantidade} unidade(s) de ${option.dataset.nome} adicionada(s) ao carrinho.`;
-            });
-
-            reconhecimento.addEventListener("error", (event) => {
-                const mensagem = event.error === "not-allowed"
-                    ? "Permita o uso do microfone no navegador e tente novamente."
-                    : "Não foi possível entender a fala. Tente novamente.";
-                statusVoz.textContent = mensagem;
-            });
-        }
+    if (botaoOuvirResumo) {
+        botaoOuvirResumo.addEventListener("click", () => {
+            if (carrinho.length === 0) {
+                statusLeitura.textContent = "Adicione ao menos um item ao carrinho antes de ouvir o resumo.";
+                return;
+            }
+            lerResumoDaVenda();
+        });
     }
 
     formVenda.addEventListener("submit", (event) => {
@@ -311,7 +273,13 @@
         if (!document.getElementById("forma_pagamento").value) {
             event.preventDefault();
             alert("Selecione a forma de pagamento.");
+            return;
         }
+
+        event.preventDefault();
+        const botaoFinalizar = formVenda.querySelector("button[type='submit']");
+        botaoFinalizar.disabled = true;
+        lerResumoDaVenda(() => formVenda.submit());
     });
 
     atualizarCarrinho();
