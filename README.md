@@ -1,4 +1,4 @@
-# Sistema de Vendas — Deise Brandão Confeitaria
+# Sistema de Vendas — PI 2
 
 Aplicação web local para cadastro de produtos, PDV, fluxo de caixa, relatórios em PDF e controle de estoque.
 
