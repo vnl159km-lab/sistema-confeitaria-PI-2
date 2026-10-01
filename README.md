@@ -29,8 +29,8 @@ O projeto está em evolução contínua e utiliza o GitHub como controle de vers
 
 | Versão | Data | Atualização |
 | --- | --- | --- |
-| `1.0.0` | 30/09/2026 | Lançamento inicial com produtos, PDV, estoque, fluxo de caixa e relatórios. |
-| `1.1.0` | 30/09/2026 | Inclusão de acessibilidade, alto contraste e adaptação ao zoom. |
+| `1.0.0` | 10/09/2026 | Lançamento inicial com produtos, PDV, estoque, fluxo de caixa e relatórios. |
+| `1.1.0` | 22/09/2026 | Inclusão de acessibilidade, alto contraste e adaptação ao zoom. |
 | `1.2.0` | 30/09/2026 | Leitura em voz alta dos itens, forma de pagamento e valor no fechamento da venda. |
 | `1.3.0` | 30/09/2026 | Integração preparada para voz neural natural da Azure, diretamente pelo sistema. |
 
