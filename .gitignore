@@ -1,0 +1,24 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+
+# Dados locais e segredos
+confeitaria.db
+*.db
+*.sqlite
+*.sqlite3
+.env
+*.log
+.permissao.tmp
+
+# Builds do Windows e do Python
+build/
+dist/
+*.exe
+*.zip
+*.spec
+
+# Arquivos temporários
+installer_app_package.zip
+*.tmp

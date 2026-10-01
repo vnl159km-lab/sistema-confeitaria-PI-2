@@ -1,0 +1,18 @@
+COMO GERAR O APLICATIVO WINDOWS
+
+1. Abra a pasta do projeto.
+2. D? dois cliques em gerar_executavel.bat.
+3. Aguarde a gera??o.
+4. O aplicativo final ficar? em dist\Confeitaria Deise Brandao.
+
+COMO ENVIAR PARA OUTRO USU?RIO
+
+1. Abra a pasta dist\Confeitaria Deise Brandao.
+2. Compacte essa pasta em .zip.
+3. Envie o .zip para o usu?rio.
+4. O usu?rio s? precisa extrair e abrir Confeitaria Deise Brandao.exe.
+
+OBSERVA??O
+
+- O banco de dados ser? salvo ao lado do execut?vel quando houver permiss?o.
+- Se o Windows bloquear escrita nessa pasta, o sistema salva os dados em uma pasta local do usu?rio.

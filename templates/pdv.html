@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}PDV - Confeitaria{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h2 class="h4 mb-3">Ponto de Venda</h2>
+
+                {% if produtos %}
+                    <div class="mb-3">
+                        <label for="produto" class="form-label">Produto</label>
+                        <select id="produto" class="form-select">
+                            <option value="">Selecione um produto</option>
+                            {% for produto in produtos %}
+                                <option
+                                    value="{{ produto.id }}"
+                                    data-nome="{{ produto.nome }}"
+                                    data-preco="{{ produto.preco_venda }}"
+                                    data-estoque="{{ produto.estoque }}"
+                                    {% if produto.estoque <= 0 %}disabled{% endif %}
+                                >
+                                    {{ produto.nome }} - {{ produto.preco_venda|moeda }} (Estoque: {{ produto.estoque }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="quantidade" class="form-label">Quantidade</label>
+                        <input id="quantidade" type="number" min="1" value="1" class="form-control">
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="button" id="adicionar-item" class="btn btn-primary">
+                            Adicionar item
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning mb-0">
+                        Cadastre produtos antes de realizar vendas.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h2 class="h4 mb-3">Carrinho</h2>
+
+                <div class="table-responsive">
+                    <table class="table align-middle" id="tabela-carrinho">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd.</th>
+                                <th>Unitário</th>
+                                <th>Subtotal</th>
+                                <th class="text-end">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="linha-vazia">
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    Nenhum item adicionado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <form method="post" action="{{ url_for('vendas') }}" id="form-venda">
+                    <input type="hidden" name="itens_json" id="itens_json">
+
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="forma_pagamento" class="form-label">Forma de pagamento</label>
+                            <select name="forma_pagamento" id="forma_pagamento" class="form-select" required>
+                                <option value="">Selecione</option>
+                                {% for forma in formas_pagamento %}
+                                    <option value="{{ forma }}">{{ forma }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 text-md-end">
+                            <div class="fs-5 fw-bold mb-3">
+                                Total: <span id="total-geral">R$ 0,00</span>
+                            </div>
+                            <button type="submit" class="btn btn-success px-4">
+                                Finalizar venda
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const carrinho = [];
+    const produtoSelect = document.getElementById("produto");
+    const quantidadeInput = document.getElementById("quantidade");
+    const tabelaBody = document.querySelector("#tabela-carrinho tbody");
+    const totalGeral = document.getElementById("total-geral");
+    const itensJsonInput = document.getElementById("itens_json");
+    const formVenda = document.getElementById("form-venda");
+    const botaoAdicionar = document.getElementById("adicionar-item");
+
+    function formatarMoeda(valor) {
+        return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+
+    function atualizarCarrinho() {
+        tabelaBody.innerHTML = "";
+
+        if (carrinho.length === 0) {
+            tabelaBody.innerHTML = `
+                <tr id="linha-vazia">
+                    <td colspan="5" class="text-center text-muted py-4">Nenhum item adicionado.</td>
+                </tr>
+            `;
+            totalGeral.textContent = formatarMoeda(0);
+            itensJsonInput.value = "[]";
+            return;
+        }
+
+        let total = 0;
+
+        carrinho.forEach((item, index) => {
+            const subtotal = item.quantidade * item.preco_unitario;
+            total += subtotal;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${item.nome}</td>
+                <td>${item.quantidade}</td>
+                <td>${formatarMoeda(item.preco_unitario)}</td>
+                <td>${formatarMoeda(subtotal)}</td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removerItem(${index})">
+                        Remover
+                    </button>
+                </td>
+            `;
+            tabelaBody.appendChild(tr);
+        });
+
+        totalGeral.textContent = formatarMoeda(total);
+        itensJsonInput.value = JSON.stringify(
+            carrinho.map(item => ({
+                produto_id: item.produto_id,
+                quantidade: item.quantidade
+            }))
+        );
+    }
+
+    function removerItem(index) {
+        carrinho.splice(index, 1);
+        atualizarCarrinho();
+    }
+
+    if (botaoAdicionar) {
+        botaoAdicionar.addEventListener("click", () => {
+            const option = produtoSelect.options[produtoSelect.selectedIndex];
+            const produtoId = parseInt(produtoSelect.value, 10);
+            const quantidade = parseInt(quantidadeInput.value, 10);
+
+            if (!produtoId) {
+                alert("Selecione um produto.");
+                return;
+            }
+
+            if (!quantidade || quantidade <= 0) {
+                alert("Informe uma quantidade válida.");
+                return;
+            }
+
+            const estoque = parseInt(option.dataset.estoque, 10);
+            const nome = option.dataset.nome;
+            const preco = parseFloat(option.dataset.preco);
+
+            const itemExistente = carrinho.find(item => item.produto_id === produtoId);
+            const novaQuantidade = itemExistente ? itemExistente.quantidade + quantidade : quantidade;
+
+            if (novaQuantidade > estoque) {
+                alert(`Estoque insuficiente para ${nome}. Disponível: ${estoque}.`);
+                return;
+            }
+
+            if (itemExistente) {
+                itemExistente.quantidade = novaQuantidade;
+            } else {
+                carrinho.push({
+                    produto_id: produtoId,
+                    nome: nome,
+                    quantidade: quantidade,
+                    preco_unitario: preco
+                });
+            }
+
+            quantidadeInput.value = 1;
+            produtoSelect.value = "";
+            atualizarCarrinho();
+        });
+    }
+
+    formVenda.addEventListener("submit", (event) => {
+        if (carrinho.length === 0) {
+            event.preventDefault();
+            alert("Adicione pelo menos um item ao carrinho.");
+            return;
+        }
+
+        if (!document.getElementById("forma_pagamento").value) {
+            event.preventDefault();
+            alert("Selecione a forma de pagamento.");
+        }
+    });
+
+    atualizarCarrinho();
+</script>
+{% endblock %}
