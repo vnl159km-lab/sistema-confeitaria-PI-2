@@ -7,17 +7,47 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --brand-primary: #cf2f92;
-            --brand-primary-dark: #9f216d;
-            --brand-secondary: #fdeaf5;
-            --brand-text: #5f294e;
+            --brand-primary: #a31268;
+            --brand-primary-dark: #731044;
+            --brand-secondary: #fceaf5;
+            --brand-text: #3e1730;
             --brand-border: #f3d5e7;
             --brand-bg: #fff8fc;
+        }
+
+        html {
+            font-size: 100%;
         }
 
         body {
             background: linear-gradient(180deg, #ffffff 0%, var(--brand-bg) 100%);
             color: var(--brand-text);
+            min-width: 320px;
+        }
+
+        .skip-link {
+            position: absolute;
+            left: 1rem;
+            top: -4rem;
+            z-index: 1100;
+            padding: 0.75rem 1rem;
+            background: #000000;
+            color: #ffffff;
+            border-radius: 0.5rem;
+        }
+
+        .skip-link:focus {
+            top: 1rem;
+            color: #ffffff;
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #005fcc;
+            outline-offset: 3px;
         }
 
         .navbar {
@@ -38,7 +68,7 @@
 
         .brand-subtitle {
             font-size: 0.9rem;
-            color: #8a5573;
+            color: #653653;
             margin: 0;
         }
 
@@ -73,7 +103,7 @@
 
         .brand-banner p {
             margin: 0;
-            color: #8a5573;
+            color: #653653;
         }
 
         .card,
@@ -101,8 +131,8 @@
         }
 
         .btn-outline-primary {
-            color: var(--brand-primary);
-            border-color: var(--brand-primary);
+            color: var(--brand-primary-dark);
+            border-color: var(--brand-primary-dark);
         }
 
         .btn-outline-primary:hover,
@@ -116,7 +146,7 @@
         }
 
         .text-bg-success {
-            background: linear-gradient(135deg, #ff6fbc 0%, #cf2f92 100%) !important;
+            background: linear-gradient(135deg, #a31268 0%, #731044 100%) !important;
         }
 
         .text-bg-danger {
@@ -125,13 +155,104 @@
 
         .app-footer {
             text-align: center;
-            color: #8a5573;
+            color: #653653;
             font-size: 0.92rem;
             padding: 1rem 0 2rem;
+        }
+
+        .accessibility-button {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 1050;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.25rem;
+            height: 3.25rem;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            background: #005fcc;
+            color: #ffffff;
+            font-size: 1.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        body.high-contrast {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        body.high-contrast .navbar,
+        body.high-contrast .card,
+        body.high-contrast .brand-banner,
+        body.high-contrast .modal-content,
+        body.high-contrast .table {
+            background: #000000 !important;
+            color: #ffffff !important;
+            border-color: #ffffff !important;
+            box-shadow: none !important;
+        }
+
+        body.high-contrast .nav-link,
+        body.high-contrast .navbar-brand,
+        body.high-contrast .brand-subtitle,
+        body.high-contrast .brand-banner h1,
+        body.high-contrast .brand-banner p,
+        body.high-contrast .table,
+        body.high-contrast .table th,
+        body.high-contrast .table td,
+        body.high-contrast .app-footer,
+        body.high-contrast .form-label,
+        body.high-contrast .form-text,
+        body.high-contrast .text-muted {
+            color: #ffffff !important;
+        }
+
+        body.high-contrast .form-control,
+        body.high-contrast .form-select {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+        }
+
+        body.high-contrast .btn-primary,
+        body.high-contrast .btn-success,
+        body.high-contrast .btn-danger {
+            background: #ffff00 !important;
+            color: #000000 !important;
+            border-color: #ffff00 !important;
+        }
+
+        body.high-contrast .btn-outline-primary,
+        body.high-contrast .btn-outline-secondary,
+        body.high-contrast .btn-outline-danger {
+            color: #ffffff !important;
+            border-color: #ffffff !important;
+        }
+
+        @media (max-width: 575.98px) {
+            .brand-logo {
+                height: 46px;
+            }
+
+            .navbar-brand {
+                max-width: calc(100% - 3.5rem);
+            }
+
+            .brand-banner {
+                padding: 1rem;
+            }
+
+            .accessibility-button {
+                right: 0.75rem;
+                bottom: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
+    <a class="skip-link" href="#conteudo-principal">Ir para o conteúdo principal</a>
     <nav class="navbar navbar-expand-lg shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-3" href="{{ url_for('pdv') }}">
@@ -160,7 +281,7 @@
         </div>
     </nav>
 
-    <main class="container py-4">
+    <main class="container py-4" id="conteudo-principal" tabindex="-1">
         <section class="brand-banner">
             <h1>Bem-vinda ao painel da confeitaria</h1>
             <p>Gerencie produtos, registre vendas e acompanhe o caixa com a identidade da sua marca.</p>
@@ -184,7 +305,41 @@
         Versão {{ APP_VERSION }}
     </footer>
 
+    <button type="button" class="accessibility-button" data-bs-toggle="modal" data-bs-target="#modal-acessibilidade" aria-label="Abrir opções de acessibilidade" title="Acessibilidade">
+        ♿
+    </button>
+
+    <div class="modal fade" id="modal-acessibilidade" tabindex="-1" aria-labelledby="titulo-acessibilidade" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="titulo-acessibilidade">Acessibilidade</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Use o zoom do navegador sem perder o acesso às funções do sistema. Atalhos: <strong>Ctrl +</strong> para ampliar, <strong>Ctrl -</strong> para reduzir e <strong>Ctrl 0</strong> para o tamanho padrão.</p>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="alto-contraste">
+                        <label class="form-check-label" for="alto-contraste">Ativar alto contraste</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const contrasteAtivo = localStorage.getItem("alto-contraste") === "ativo";
+        const controleContraste = document.getElementById("alto-contraste");
+
+        document.body.classList.toggle("high-contrast", contrasteAtivo);
+        controleContraste.checked = contrasteAtivo;
+        controleContraste.addEventListener("change", () => {
+            const ativo = controleContraste.checked;
+            document.body.classList.toggle("high-contrast", ativo);
+            localStorage.setItem("alto-contraste", ativo ? "ativo" : "inativo");
+        });
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

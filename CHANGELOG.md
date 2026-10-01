@@ -1,5 +1,11 @@
 # Histórico de versões
 
+## 1.1.0 — 30/09/2026
+
+- Adicionado botão de acessibilidade com alto contraste e navegação por teclado aprimorada.
+- Ajustado o layout responsivo para uso com zoom do navegador.
+- Adicionado reconhecimento de voz no PDV para incluir produtos pela fala.
+
 ## 1.0.0 — 30/09/2026
 
 - Sistema web de vendas, estoque e fluxo de caixa para a confeitaria.

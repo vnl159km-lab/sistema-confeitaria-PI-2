@@ -21,7 +21,7 @@ LOGO_PATH = BASE_DIR / "static" / "img" / "logo.jpg"
 FORMAS_PAGAMENTO = ["Dinheiro", "Pix", "Cartão de Débito", "Cartão de Crédito"]
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 RESET_PASSWORD = os.environ.get("RESET_PASSWORD", "chefinha")
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
 
 BRAND_PRIMARY = colors.HexColor("#cf2f92")
 BRAND_SECONDARY = colors.HexColor("#fbe7f4")
