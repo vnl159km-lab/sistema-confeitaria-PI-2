@@ -19,6 +19,12 @@ Esta atualização aprimora a inclusão e a usabilidade do sistema:
 
 Consulte o [histórico completo de versões](CHANGELOG.md) para acompanhar a evolução do trabalho.
 
+## Atualizações do trabalho
+
+O projeto está em evolução contínua e utiliza o GitHub como controle de versão. Cada melhoria é registrada com uma descrição clara e enviada ao repositório, permitindo acompanhar o desenvolvimento do sistema ao longo do tempo.
+
+**Último marco:** inclusão de recursos de acessibilidade e comando de venda por voz no PDV.
+
 ## Acessibilidade
 
 - Botão ♿ com opção de alto contraste, salva para os próximos acessos.
