@@ -4,8 +4,11 @@ import sqlite3
 import threading
 import webbrowser
 from datetime import date, datetime, timedelta
+from html import escape
 from io import BytesIO
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 from flask import Flask, Response, flash, g, jsonify, redirect, render_template, request, url_for
 from reportlab.lib import colors
@@ -21,7 +24,10 @@ LOGO_PATH = BASE_DIR / "static" / "img" / "logo.jpg"
 FORMAS_PAGAMENTO = ["Dinheiro", "Pix", "Cartão de Débito", "Cartão de Crédito"]
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 RESET_PASSWORD = os.environ.get("RESET_PASSWORD", "chefinha")
-APP_VERSION = "1.2.0"
+APP_VERSION = "1.3.0"
+AZURE_SPEECH_KEY = os.environ.get("AZURE_SPEECH_KEY")
+AZURE_SPEECH_REGION = os.environ.get("AZURE_SPEECH_REGION")
+AZURE_SPEECH_VOICE = os.environ.get("AZURE_SPEECH_VOICE", "pt-BR-FranciscaNeural")
 
 BRAND_PRIMARY = colors.HexColor("#cf2f92")
 BRAND_SECONDARY = colors.HexColor("#fbe7f4")
@@ -1029,6 +1035,47 @@ def api_fluxo_caixa():
     lancamentos = [row_to_dict(row) for row in obter_fluxo_caixa()]
     totais = obter_totais_financeiro()
     return jsonify({"lancamentos": lancamentos, "totais": totais})
+
+
+@app.route("/api/voz-neural", methods=["POST"])
+def api_voz_neural():
+    if not AZURE_SPEECH_KEY or not AZURE_SPEECH_REGION:
+        return jsonify({"erro": "A voz neural ainda não foi configurada."}), 503
+
+    payload = request.get_json(silent=True) or {}
+    texto = str(payload.get("texto", "")).strip()
+    if not texto:
+        return jsonify({"erro": "Informe o texto para leitura."}), 400
+    if len(texto) > 1000:
+        return jsonify({"erro": "O resumo da venda é muito longo para leitura."}), 400
+
+    ssml = f'''<speak version="1.0" xml:lang="pt-BR">
+        <voice name="{escape(AZURE_SPEECH_VOICE, quote=True)}">
+            <prosody rate="-10%" pitch="+2%">{escape(texto)}</prosody>
+        </voice>
+    </speak>'''.encode("utf-8")
+    endpoint = f"https://{AZURE_SPEECH_REGION}.tts.speech.microsoft.com/cognitiveservices/v1"
+    requisicao = Request(
+        endpoint,
+        data=ssml,
+        headers={
+            "Ocp-Apim-Subscription-Key": AZURE_SPEECH_KEY,
+            "Content-Type": "application/ssml+xml",
+            "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3",
+            "User-Agent": "Sistema-Confeitaria",
+        },
+        method="POST",
+    )
+
+    try:
+        with urlopen(requisicao, timeout=20) as resposta:
+            audio = resposta.read()
+    except HTTPError:
+        return jsonify({"erro": "Não foi possível gerar a voz neural. Confira a configuração do Azure."}), 502
+    except URLError:
+        return jsonify({"erro": "Não foi possível conectar ao serviço de voz neural."}), 503
+
+    return Response(audio, mimetype="audio/mpeg")
 
 
 with app.app_context():

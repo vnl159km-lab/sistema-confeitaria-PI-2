@@ -2,7 +2,7 @@
 
 Aplicação web local para cadastro de produtos, PDV, fluxo de caixa, relatórios em PDF e controle de estoque.
 
-**Versão atual:** `1.2.0`
+**Versão atual:** `1.3.0`
 
 Cada melhoria receberá um novo número de versão e será registrada em `CHANGELOG.md` antes de ser enviada ao GitHub.
 
@@ -32,6 +32,7 @@ O projeto está em evolução contínua e utiliza o GitHub como controle de vers
 | `1.0.0` | 30/09/2026 | Lançamento inicial com produtos, PDV, estoque, fluxo de caixa e relatórios. |
 | `1.1.0` | 30/09/2026 | Inclusão de acessibilidade, alto contraste e adaptação ao zoom. |
 | `1.2.0` | 30/09/2026 | Leitura em voz alta dos itens, forma de pagamento e valor no fechamento da venda. |
+| `1.3.0` | 30/09/2026 | Integração preparada para voz neural natural da Azure, diretamente pelo sistema. |
 
 As novas versões serão adicionadas ao final desta tabela, mantendo a evolução cronológica do sistema.
 
@@ -66,6 +67,24 @@ Depois, acesse `http://127.0.0.1:5000`.
 | `DATABASE_PATH` | Caminho do banco SQLite. Em hospedagem, use um volume persistente. |
 | `ADMIN_PASSWORD` | Senha administrativa do sistema. |
 | `RESET_PASSWORD` | Senha do reset completo. |
+| `AZURE_SPEECH_KEY` | Chave do recurso Azure Speech para a voz neural. |
+| `AZURE_SPEECH_REGION` | Região do recurso Azure Speech, por exemplo: `brazilsouth`. |
+| `AZURE_SPEECH_VOICE` | Voz neural usada pelo sistema. Padrão: `pt-BR-FranciscaNeural`. |
+
+## Voz neural integrada
+
+Para usar a voz natural diretamente pelo sistema, crie um recurso **Speech** na Azure e configure `AZURE_SPEECH_KEY` e `AZURE_SPEECH_REGION` no computador ou na hospedagem. A chave fica somente no servidor e nunca é enviada ao navegador.
+
+Enquanto a Azure não estiver configurada, o sistema usa automaticamente a voz padrão disponível no navegador.
+
+No PowerShell, após criar o recurso Azure Speech, configure os dados sem enviar a chave para o GitHub:
+
+```powershell
+setx AZURE_SPEECH_KEY "SUA_CHAVE_AZURE"
+setx AZURE_SPEECH_REGION "brazilsouth"
+```
+
+Feche o terminal, abra novamente e reinicie o sistema. A voz padrão é `pt-BR-FranciscaNeural`; para trocar a voz, configure também `AZURE_SPEECH_VOICE`.
 
 ## Hospedagem
 

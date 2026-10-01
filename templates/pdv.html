@@ -248,7 +248,28 @@
         window.speechSynthesis.addEventListener("voiceschanged", atualizarVozes);
     }
 
-    function lerResumoDaVenda(aoTerminar) {
+    async function reproduzirAudioNeural(texto) {
+        const resposta = await fetch("{{ url_for('api_voz_neural') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto })
+        });
+
+        if (!resposta.ok) {
+            throw new Error("Voz neural indisponível.");
+        }
+
+        const audioUrl = URL.createObjectURL(await resposta.blob());
+        const audio = new Audio(audioUrl);
+        await new Promise((resolve, reject) => {
+            audio.onended = resolve;
+            audio.onerror = reject;
+            audio.play().catch(reject);
+        });
+        URL.revokeObjectURL(audioUrl);
+    }
+
+    function lerResumoNoNavegador(texto, aoTerminar) {
         if (!("speechSynthesis" in window)) {
             statusLeitura.textContent = "A leitura em voz alta não é compatível com este navegador.";
             if (aoTerminar) aoTerminar();
@@ -256,7 +277,7 @@
         }
 
         window.speechSynthesis.cancel();
-        const fala = new SpeechSynthesisUtterance(criarResumoDaVenda());
+        const fala = new SpeechSynthesisUtterance(texto);
         fala.lang = "pt-BR";
         fala.voice = obterVozAmigavel() || null;
         fala.rate = 0.84;
@@ -271,6 +292,20 @@
             if (aoTerminar) aoTerminar();
         };
         window.speechSynthesis.speak(fala);
+    }
+
+    async function lerResumoDaVenda(aoTerminar) {
+        const texto = criarResumoDaVenda();
+        statusLeitura.textContent = "Gerando a leitura natural da venda...";
+
+        try {
+            await reproduzirAudioNeural(texto);
+            statusLeitura.textContent = "Leitura natural concluída.";
+            if (aoTerminar) aoTerminar();
+        } catch (erro) {
+            statusLeitura.textContent = "Voz neural indisponível. Usando a voz padrão do navegador.";
+            lerResumoNoNavegador(texto, aoTerminar);
+        }
     }
 
     if (botaoOuvirResumo) {
