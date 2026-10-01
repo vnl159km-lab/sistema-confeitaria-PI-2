@@ -124,6 +124,7 @@
     const botaoAdicionar = document.getElementById("adicionar-item");
     const botaoOuvirResumo = document.getElementById("ouvir-resumo");
     const statusLeitura = document.getElementById("status-leitura");
+    let vozesDisponiveis = [];
 
     function formatarMoeda(valor) {
         return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -230,6 +231,23 @@
         return `Resumo da venda. Itens: ${itens}. Forma de pagamento: ${pagamento || "não informada"}. Total a pagar: ${formatarMoeda(total)}.`;
     }
 
+    function atualizarVozes() {
+        vozesDisponiveis = window.speechSynthesis.getVoices();
+    }
+
+    function obterVozAmigavel() {
+        const vozesEmPortugues = vozesDisponiveis.filter((voz) => voz.lang.toLowerCase().startsWith("pt"));
+        const nomesPreferidos = ["francisca", "maria", "helena", "luciana", "fernanda", "female"];
+        return vozesEmPortugues.find((voz) =>
+            nomesPreferidos.some((nome) => voz.name.toLowerCase().includes(nome))
+        ) || vozesEmPortugues.find((voz) => voz.lang.toLowerCase() === "pt-br") || vozesEmPortugues[0];
+    }
+
+    if ("speechSynthesis" in window) {
+        atualizarVozes();
+        window.speechSynthesis.addEventListener("voiceschanged", atualizarVozes);
+    }
+
     function lerResumoDaVenda(aoTerminar) {
         if (!("speechSynthesis" in window)) {
             statusLeitura.textContent = "A leitura em voz alta não é compatível com este navegador.";
@@ -240,7 +258,9 @@
         window.speechSynthesis.cancel();
         const fala = new SpeechSynthesisUtterance(criarResumoDaVenda());
         fala.lang = "pt-BR";
-        fala.rate = 0.9;
+        fala.voice = obterVozAmigavel() || null;
+        fala.rate = 0.84;
+        fala.pitch = 1.08;
         statusLeitura.textContent = "Lendo o resumo da venda...";
         fala.onend = () => {
             statusLeitura.textContent = "Leitura concluída.";
