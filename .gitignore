@@ -12,13 +12,5 @@ confeitaria.db
 *.log
 .permissao.tmp
 
-# Builds do Windows e do Python
-build/
-dist/
-*.exe
-*.zip
-*.spec
-
 # Arquivos temporários
-installer_app_package.zip
 *.tmp

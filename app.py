@@ -1,7 +1,6 @@
 ﻿import json
 import os
 import sqlite3
-import sys
 import threading
 import webbrowser
 from datetime import date, datetime, timedelta
@@ -16,30 +15,8 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-def obter_diretorio_base():
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        return Path(sys._MEIPASS)
-    return Path(__file__).resolve().parent
-
-
-def obter_diretorio_dados():
-    if getattr(sys, "frozen", False):
-        pasta_executavel = Path(sys.executable).resolve().parent
-        try:
-            arquivo_teste = pasta_executavel / ".permissao.tmp"
-            arquivo_teste.write_text("ok", encoding="utf-8")
-            arquivo_teste.unlink(missing_ok=True)
-            return pasta_executavel
-        except Exception:
-            pasta_local = Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "ConfeitariaDeiseBrandao"
-            pasta_local.mkdir(parents=True, exist_ok=True)
-            return pasta_local
-    return Path(__file__).resolve().parent
-
-
-BASE_DIR = obter_diretorio_base()
-DATA_DIR = obter_diretorio_dados()
-DATABASE = Path(os.environ.get("DATABASE_PATH", str(DATA_DIR / "confeitaria.db")))
+BASE_DIR = Path(__file__).resolve().parent
+DATABASE = Path(os.environ.get("DATABASE_PATH", str(BASE_DIR / "confeitaria.db")))
 LOGO_PATH = BASE_DIR / "static" / "img" / "logo.jpg"
 FORMAS_PAGAMENTO = ["Dinheiro", "Pix", "Cartão de Débito", "Cartão de Crédito"]
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
