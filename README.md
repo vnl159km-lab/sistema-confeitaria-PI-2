@@ -25,6 +25,15 @@ O projeto está em evolução contínua e utiliza o GitHub como controle de vers
 
 **Último marco:** inclusão de recursos de acessibilidade e comando de venda por voz no PDV.
 
+## Linha do tempo de versões
+
+| Versão | Data | Atualização |
+| --- | --- | --- |
+| `1.0.0` | 30/09/2026 | Lançamento inicial com produtos, PDV, estoque, fluxo de caixa e relatórios. |
+| `1.1.0` | 30/09/2026 | Inclusão de acessibilidade, alto contraste, adaptação ao zoom e venda por voz. |
+
+As novas versões serão adicionadas ao final desta tabela, mantendo a evolução cronológica do sistema.
+
 ## Acessibilidade
 
 - Botão ♿ com opção de alto contraste, salva para os próximos acessos.
