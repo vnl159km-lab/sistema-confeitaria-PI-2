@@ -21,3 +21,8 @@ Esta página é a linha do tempo das atualizações do sistema. As versões apar
 
 - Preparada a integração com a voz neural brasileira Francisca da Azure, gerada diretamente pelo sistema.
 - Mantida a leitura local do navegador como alternativa enquanto a Azure não estiver configurada.
+
+## 1.4.0 — 20/10/2026
+
+- Adicionada configuração para publicar automaticamente no Render a partir do GitHub.
+- Configurado o uso temporário de SQLite no plano gratuito, conforme escolhido.

@@ -2,20 +2,20 @@
 
 Aplicação web local para cadastro de produtos, PDV, fluxo de caixa, relatórios em PDF e controle de estoque.
 
-**Versão atual:** `1.3.0`
+**Versão atual:** `1.4.0`
 
 Cada melhoria receberá um novo número de versão e será registrada em `CHANGELOG.md` antes de ser enviada ao GitHub.
 
 ## Atualização mais recente
 
-### Versão 1.1.0 — Acessibilidade e venda por voz
+### Versão 1.4.0 — Preparação para hospedagem no Render
 
-Esta atualização aprimora a inclusão e a usabilidade do sistema:
+Esta atualização prepara o sistema para publicação pública pelo Render, integrado ao GitHub:
 
-- Adicionado botão de acessibilidade ♿ com modo de alto contraste.
-- Layout adaptado para manter a organização em diferentes níveis de zoom.
-- Navegação por teclado com destaque visual nos campos e botões.
-- Inclusão de produtos no PDV por comando de voz, com suporte a quantidade falada ou numérica.
+- Adicionado o arquivo `render.yaml` para criar o serviço web automaticamente.
+- Senhas administrativas solicitadas com segurança no painel do Render.
+- Publicação automática a cada atualização enviada para a branch `main`.
+- Mantido o SQLite temporário, conforme escolhido, para testar no plano gratuito.
 
 Consulte o [histórico completo de versões](CHANGELOG.md) para acompanhar a evolução do trabalho.
 
@@ -23,7 +23,7 @@ Consulte o [histórico completo de versões](CHANGELOG.md) para acompanhar a evo
 
 O projeto está em evolução contínua e utiliza o GitHub como controle de versão. Cada melhoria é registrada com uma descrição clara e enviada ao repositório, permitindo acompanhar o desenvolvimento do sistema ao longo do tempo.
 
-**Último marco:** inclusão de recursos de acessibilidade e comando de venda por voz no PDV.
+**Último marco:** preparação para hospedagem no Render com integração ao GitHub.
 
 ## Linha do tempo de versões
 
@@ -33,6 +33,7 @@ O projeto está em evolução contínua e utiliza o GitHub como controle de vers
 | `1.1.0` | 30/09/2026 | Inclusão de acessibilidade, alto contraste e adaptação ao zoom. |
 | `1.2.0` | 30/09/2026 | Leitura em voz alta dos itens, forma de pagamento e valor no fechamento da venda. |
 | `1.3.0` | 30/09/2026 | Integração preparada para voz neural natural da Azure, diretamente pelo sistema. |
+| `1.4.0` | 20/10/2026 | Configuração para publicação automática no Render via GitHub, usando SQLite temporário. |
 
 As novas versões serão adicionadas ao final desta tabela, mantendo a evolução cronológica do sistema.
 
@@ -88,10 +89,4 @@ Feche o terminal, abra novamente e reinicie o sistema. A voz padrão é `pt-BR-F
 
 ## Hospedagem
 
-O projeto está pronto para servidores Python com o comando:
-
-```bash
-gunicorn wsgi:app
-```
-
-Leia `DEPLOYMENT.md` antes de publicar: SQLite precisa de armazenamento persistente para não perder dados.
+O projeto está preparado para publicar no Render pelo arquivo `render.yaml`. Leia `DEPLOYMENT.md` antes de criar o serviço: nesta configuração, o SQLite é temporário e pode perder dados em reinicializações ou novas publicações.
